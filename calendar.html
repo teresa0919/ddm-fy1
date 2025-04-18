@@ -6,6 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="stylesheet" href="style.css" />
   <style>
+    body {
+      background-color: #fdfaf6;
+      font-family: 'Noto Sans TC', sans-serif;
+      color: #4e342e;
+      padding: 2rem;
+    }
     .calendar {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -18,12 +24,10 @@
       padding: 0.75rem 0.5rem;
       text-align: center;
       font-size: 0.9rem;
-      cursor: default;
     }
     .calendar .header {
       font-weight: bold;
       background: none;
-      box-shadow: none;
       color: #734c9e;
     }
     .calendar .checked {
@@ -32,22 +36,122 @@
       color: #4a148c;
       cursor: pointer;
     }
-    .record-list {
-      margin-top: 2rem;
-      text-align: left;
-    }
     .record-item {
-      padding: 0.5rem;
+      margin-top: 1rem;
       border-bottom: 1px dashed #ccc;
-      font-size: 0.95rem;
+      padding-bottom: 0.5rem;
+    }
+    .nickname-alert {
+      background: #eee;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      color: #666;
+      border-radius: 1rem;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>打卡月曆（僅顯示我的打卡）</h1>
-    <div class="calendar" id="calendar"></div>
-    <div class="record-list" id="recordList"></div>
-    <div class="links">
-      <a href="index.html">回首頁</a>
-    </div>
+  <h1>打卡月曆（僅顯示我的打卡）</h1>
+  <div id="nicknameInfo" class="nickname-alert"></div>
+  <div id="calendar" class="calendar"></div>
+  <div id="recordList"></div>
+  <div class="links" style="margin-top:2rem;">
+    <a href="index.html">回首頁</a>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbYzBhcttD3Dn7QRKOiOM-c3RV-ArMl9I",
+      authDomain: "ddm-fy1-8fe29.firebaseapp.com",
+      databaseURL: "https://ddm-fy1-8fe29-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "ddm-fy1-8fe29",
+      storageBucket: "ddm-fy1-8fe29.appspot.com",
+      messagingSenderId: "111333348405",
+      appId: "1:111333348405:web:095cbeabb7f67353f40d7c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const calendarEl = document.getElementById("calendar");
+    const recordList = document.getElementById("recordList");
+    const nicknameEl = document.getElementById("nicknameInfo");
+
+    const nickname = localStorage.getItem("nickname");
+
+    if (!nickname) {
+      nicknameEl.innerHTML = "請先前往首頁打卡，我們才能記得你是誰哦！";
+      throw new Error("無法取得暱稱");
+    }
+
+    nicknameEl.innerHTML = `目前使用者暱稱：<strong>${nickname}</strong>`;
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth(); // 0-indexed
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
+    const dateMap = {};
+
+    async function loadData() {
+      const snapshot = await get(child(ref(db), "checkins"));
+      const data = snapshot.exists() ? snapshot.val() : {};
+
+      for (const date in data) {
+        if (date.startsWith(`${year}-${(month + 1).toString().padStart(2, '0')}`)) {
+          const myRecords = Object.values(data[date]).filter(d => d.nickname === nickname);
+          if (myRecords.length > 0) {
+            dateMap[date] = myRecords;
+          }
+        }
+      }
+
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      const weekdays = ['日','一','二','三','四','五','六'];
+      weekdays.forEach(day => {
+        const header = document.createElement("div");
+        header.textContent = day;
+        header.className = "header";
+        calendarEl.appendChild(header);
+      });
+
+      for (let i = 0; i < firstDay; i++) {
+        calendarEl.appendChild(document.createElement("div"));
+      }
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const cell = document.createElement("div");
+        const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
+        cell.textContent = d;
+
+        if (dateMap[dateStr]) {
+          cell.classList.add("checked");
+          cell.addEventListener("click", () => showRecords(dateStr));
+        }
+
+        calendarEl.appendChild(cell);
+      }
+    }
+
+    function showRecords(dateStr) {
+      const records = dateMap[dateStr];
+      recordList.innerHTML = `<h3>${dateStr} 的打卡紀錄：</h3>` +
+        records.map(r => `
+          <div class="record-item">
+            經文：${r.sutra}<br/>
+            次數：${r.count}
+          </div>
+        `).join('');
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
