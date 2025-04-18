@@ -47,42 +47,26 @@
 <body>
   <div class="container">
     <h1>打卡月曆（僅顯示我的打卡）</h1>
-
-    <div id="nicknamePrompt" style="text-align:center; margin-bottom:1rem;">
-      <input type="text" id="inputNickname" placeholder="輸入你的暱稱" style="padding:0.5rem;border-radius:0.5rem;border:1px solid #ccc;" />
-      <button onclick="saveNickname()" style="margin-left:0.5rem;padding:0.5rem 1rem;border:none;border-radius:0.5rem;background:#8e44ad;color:white;cursor:pointer;">開始查詢</button>
-    </div>
-
     <div class="calendar" id="calendar"></div>
     <div class="record-list" id="recordList"></div>
-    <div class="links" style="margin-top:1rem;">
+    <div class="links">
       <a href="index.html">回首頁</a>
     </div>
   </div>
 
   <script type="module">
-    function saveNickname() {
-      const input = document.getElementById("inputNickname").value.trim();
-      if (input) {
-        localStorage.setItem("nickname", input);
-        location.reload();
-      } else {
-        alert("請輸入暱稱");
-      }
-    }
-
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyBU1AYuZzvZC1eW4nllG5qCAvcKXT90sg0",
-      authDomain: "ddm-fy.firebaseapp.com",
-      databaseURL: "https://ddm-fy-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "ddm-fy",
-      storageBucket: "ddm-fy.firebasestorage.app",
-      messagingSenderId: "439647437849",
-      appId: "1:439647437849:web:b195f3e4d316d417969688"
-    };
+  apiKey: "AIzaSyDbYzBhcttD3Dn7QRKOiOM-c3RV-ArMl9I",
+  authDomain: "ddm-fy1-8fe29.firebaseapp.com",
+  databaseURL: "https://ddm-fy1-8fe29-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "ddm-fy1-8fe29",
+  storageBucket: "ddm-fy1-8fe29.appspot.com",
+  messagingSenderId: "111333348405",
+  appId: "1:111333348405:web:095cbeabb7f67353f40d7c"
+};
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
@@ -91,23 +75,33 @@
     const recordList = document.getElementById("recordList");
     const today = new Date();
     const year = today.getFullYear();
-    const month = today.getMonth();
+    const month = today.getMonth(); // 0-indexed
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const firstDay = new Date(year, month, 1).getDay();
     const dateMap = {};
 
-    const nickname = localStorage.getItem("nickname");
-    if (!nickname) {
-      document.getElementById("calendar").style.display = "none";
-      document.getElementById("recordList").style.display = "none";
-      throw new Error("No nickname in localStorage");
-    }
+    
+const nickname = localStorage.getItem("nickname");
+console.log("[debug] nickname from localStorage:", nickname);
+if (!nickname) {
+  document.getElementById("calendar").innerHTML = `
+    <div style="text-align:center;color:#999;padding:2rem;max-width:300px;margin:auto;">
+      <p>請先前往首頁打卡，</p>
+      <p>我們就會記得你是誰囉！</p>
+    </div>`;
+  throw new Error("No nickname in localStorage");
+}
+
 
     async function loadData() {
       const snapshot = await get(child(ref(db), "checkins"));
       const data = snapshot.exists() ? snapshot.val() : {};
       for (const date in data) {
-        if (date.startsWith(`${year}-${(month+1).toString().padStart(2, '0')}`)) {
+        
+const [y, m] = date.split("-").map(n => parseInt(n, 10));
+if (y === year && m === (month + 1)) {
+
+          // 篩選出該使用者的紀錄
           const myRecords = Object.values(data[date]).filter(d => d.nickname === nickname);
           if (myRecords.length > 0) {
             dateMap[date] = myRecords;
