@@ -70,6 +70,86 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+
+    const calendarEl = document.getElementById("calendar");
+    const recordList = document.getElementById("recordList");
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth(); // 0-indexed
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
+    const dateMap = {};
+
+    
+const nickname = localStorage.getItem("nickname");
+console.log("[debug] nickname from localStorage:", nickname);
+if (!nickname) {
+  document.getElementById("calendar").innerHTML = `
+    <div style="text-align:center;color:#999;padding:2rem;max-width:300px;margin:auto;">
+      <p>請先前往首頁打卡，</p>
+      <p>我們就會記得你是誰囉！</p>
+    </div>`;
+  throw new Error("No nickname in localStorage");
+}
+
+
+    async function loadData() {
+      const snapshot = await get(child(ref(db), "checkins"));
+      const data = snapshot.exists() ? snapshot.val() : {};
+      for (const date in data) {
+        
+const [y, m] = date.split("-").map(n => parseInt(n, 10));
+if (y === year && m === (month + 1)) {
+
+          // 篩選出該使用者的紀錄
+          const myRecords = Object.values(data[date]).filter(d => d.nickname === nickname);
+          if (myRecords.length > 0) {
+            dateMap[date] = myRecords;
+          }
+        }
+      }
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      const weekdays = ['日','一','二','三','四','五','六'];
+      weekdays.forEach(day => {
+        const header = document.createElement("div");
+        header.textContent = day;
+        header.className = "header";
+        calendarEl.appendChild(header);
+      });
+
+      for (let i = 0; i < firstDay; i++) {
+        calendarEl.appendChild(document.createElement("div"));
+      }
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const cell = document.createElement("div");
+        const dateStr = `${year}-${(month+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`;
+        cell.textContent = d;
+
+        if (dateMap[dateStr]) {
+          cell.classList.add("checked");
+          cell.addEventListener("click", () => showRecords(dateStr));
+        }
+
+        calendarEl.appendChild(cell);
+      }
+    }
+
+    function showRecords(dateStr) {
+      const records = dateMap[dateStr];
+      recordList.innerHTML = `<h3>${dateStr} 我的打卡紀錄</h3>` +
+        records.map(item =>
+          `<div class="record-item">
+            經文：${item.sutra || "未知"}<br/>
+            次數：${item.count || 1}
+          </div>`
+        ).join('');
+    }
+
+    loadData();
   </script>
 </body>
 </html>
