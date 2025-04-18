@@ -5,7 +5,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>豐原分會定課打卡站</title>
-  <link rel="stylesheet" href="style.css" />
   <style>
     body {
       font-family: 'Noto Sans TC', sans-serif;
@@ -101,6 +100,53 @@
       <a href="leaderboard.html">排行榜</a>
     </div>
   </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbYzBhcttD3Dn7QRKOiOM-c3RV-ArMl9I",
+      authDomain: "ddm-fy1-8fe29.firebaseapp.com",
+      databaseURL: "https://ddm-fy1-8fe29-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "ddm-fy1-8fe29",
+      storageBucket: "ddm-fy1-8fe29.appspot.com",
+      messagingSenderId: "111333348405",
+      appId: "1:111333348405:web:095cbeabb7f67353f40d7c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    document.getElementById("submitBtn").addEventListener("click", async () => {
+      const nickname = document.getElementById("nickname").value.trim();
+      const sutra = document.getElementById("sutraSelect").value === "其他"
+        ? document.getElementById("customSutra").value.trim()
+        : document.getElementById("sutraSelect").value;
+      const count = document.getElementById("count").value;
+
+      if (!nickname || !sutra || !count) {
+        alert("請填寫所有欄位！");
+        return;
+      }
+
+      try {
+        const date = new Date().toISOString().slice(0, 10);
+        const checkinRef = ref(db, "checkins/" + date);
+        await push(checkinRef, {
+          nickname,
+          sutra,
+          count: Number(count),
+          timestamp: Date.now()
+        });
+
+        window.location.href = "success.html";
+      } catch (err) {
+        alert("打卡失敗：" + err.message);
+      }
+    });
+  </script>
+
   <script>
     function toggleCustomInput(select) {
       const customInput = document.getElementById('customSutra');
