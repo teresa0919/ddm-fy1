@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -131,6 +130,7 @@
       }
 
       try {
+        localStorage.setItem("nickname", nickname);
         const date = new Date().toISOString().slice(0, 10);
         const checkinRef = ref(db, "checkins/" + date);
         await push(checkinRef, {
