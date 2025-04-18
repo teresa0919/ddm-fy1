@@ -1,0 +1,12 @@
+{
+  "name": "ddm-fy",
+  "version": "1.0.0",
+  "description": "My super simple website",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
