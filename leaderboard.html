@@ -1,72 +1,55 @@
-
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>排行榜</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #fefcf7;
+      margin: 0;
+      padding: 2rem;
+      color: #4e342e;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2rem;
+      color: #6d4c41;
+    }
+    h2 {
+      color: #8e44ad;
+      margin-top: 2rem;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      font-size: 1.1rem;
+    }
+    li {
+      margin: 0.5rem 0;
+    }
+    .links {
+      margin-top: 2rem;
+    }
+    .links a {
+      color: #5d4037;
+      text-decoration: none;
+      margin: 0 0.5rem;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h2>誦經排行榜</h2>
+  <h1>排行榜</h1>
 
-    <h3>佛經總類排行</h3>
-    <ul id="sutra-rank"></ul>
-
-    <h3>個人誦持排行</h3>
-    <ul id="user-rank"></ul>
-
-    <a href="index.html" class="btn">回首頁</a>
+  <div id="overall">
+    <h2>總排行榜</h2>
+    <ul>
+      <li>使用者A - 30次</li>
+      <li>使用者B - 25次</li>
+      <li>使用者C - 20次</li>
+    </ul>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
-
-    const firebaseConfig = {
-  apiKey: "AIzaSyDbYzBhcttD3Dn7QRKOiOM-c3RV-ArMl9I",
-  authDomain: "ddm-fy1-8fe29.firebaseapp.com",
-  databaseURL: "https://ddm-fy1-8fe29-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "ddm-fy1-8fe29",
-  storageBucket: "ddm-fy1-8fe29.appspot.com",
-  messagingSenderId: "111333348405",
-  appId: "1:111333348405:web:095cbeabb7f67353f40d7c"
-};
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    function maskName(name) {
-      if (name.length === 2) return name[0] + "○";
-      if (name.length === 3) return name[0] + "○" + name[2];
-      return name[0] + "○";
-    }
-
-    function renderRanking(data, targetEl, isUser = false) {
-      const sorted = Object.entries(data).sort((a, b) => b[1] - a[1]);
-      targetEl.innerHTML = sorted.map(([key, val], i) => {
-        const displayName = isUser ? maskName(key) : key;
-        return `<li>${i + 1}. ${displayName}：${val} 次</li>`;
-      }).join("");
-    }
-
-    onValue(ref(db, "checkins"), (snapshot) => {
-      const data = snapshot.val();
-      const sutraCount = {};
-      const userCount = {};
-
-      for (const day in data) {
-        for (const record of Object.values(data[day])) {
-          const { nickname, sutra, count } = record;
-          sutraCount[sutra] = (sutraCount[sutra] || 0) + count;
-          userCount[nickname] = (userCount[nickname] || 0) + count;
-        }
-      }
-
-      renderRanking(sutraCount, document.getElementById("sutra-rank"));
-      renderRanking(userCount, document.getElementById("user-rank"), true);
-    });
-  </script>
-</body>
-</html>
+  <div class="links">
+    <a href="index.html">回首頁</a
