@@ -10,9 +10,6 @@
 <body>
   <div class="container">
     <h2>佛經誦持統計</h2>
-    
-    <!-- 每日早晚課統計 -->
-    <div id="dailySummary" style="margin-top: 2rem;"></div>
 
     <div class="chart-section">
       <div class="pie-chart">
@@ -22,9 +19,6 @@
         <div id="barChart"></div>
       </div>
     </div>
-
-    <!-- 每月誦持統計 -->
-    <div id="monthlySummary" style="margin-top: 2rem;"></div>
 
     <a href="index.html" class="btn">回首頁</a>
   </div>
@@ -49,53 +43,15 @@
     onValue(ref(db, "checkins"), (snapshot) => {
       const data = snapshot.val();
       const sutraCount = {};
-      const monthlySummary = {};
-      const dailySummary = { morning: 0, evening: 0 };
 
       for (const date in data) {
-        const [year, month] = date.split("-");
-        const key = `${year}-${month}`;
         for (const record of Object.values(data[date])) {
-          const { sutra, count, session } = record;
-
-          // Accumulate Sutra counts
+          const { sutra, count } = record;
           sutraCount[sutra] = (sutraCount[sutra] || 0) + Number(count);
-
-          // Accumulate monthly statistics
-          if (!monthlySummary[key]) monthlySummary[key] = {};
-          monthlySummary[key][sutra] = (monthlySummary[key][sutra] || 0) + Number(count);
-
-          // Count morning and evening sessions
-          if (session === "早課") {
-            dailySummary.morning += Number(count);
-          } else if (session === "晚課") {
-            dailySummary.evening += Number(count);
-          }
         }
       }
 
       renderCharts(sutraCount);
-
-      // Render daily summary for morning and evening sessions
-      const dailyDiv = document.getElementById("dailySummary");
-      dailyDiv.innerHTML = `
-        <h3>每日誦持統計</h3>
-        <div>早課誦持總次數：${dailySummary.morning} 次</div>
-        <div>晚課誦持總次數：${dailySummary.evening} 次</div>
-      `;
-
-      // Render monthly summary
-      const summaryDiv = document.getElementById("monthlySummary");
-      summaryDiv.innerHTML = "<h3>每月誦持統計</h3>" + Object.entries(monthlySummary).map(([month, sutras]) => {
-        return `
-          <div style='margin-bottom: 1rem;'>
-            <strong>${month}</strong>
-            <ul>
-              ${Object.entries(sutras).map(([sutra, count]) => `<li>${sutra}：${count} 次</li>`).join("")}
-            </ul>
-          </div>
-        `;
-      }).join("");
     });
 
     function renderCharts(data) {
