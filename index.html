@@ -30,7 +30,6 @@
       font-size: 1.75rem;
       margin-bottom: 1.5rem;
       font-weight: 700;
-      color: #5d4037;
     }
     input, select, button {
       width: 100%;
@@ -47,10 +46,6 @@
       border: none;
       font-weight: bold;
       cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    button:hover {
-      background-color: #f9a825;
     }
     .links {
       margin-top: 1.5rem;
@@ -113,7 +108,7 @@
     <div class="links">
       <a href="calendar.html">打卡月曆</a> |
       <a href="chart.html">統計圖表</a> |
-      <a href="leaderboard.html">定課法門統計</a>
+      <a href="leaderboard.html">排行榜</a>
     </div>
   </div>
 
@@ -134,6 +129,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    // 自動判斷早課或晚課
     const hour = new Date().getHours();
     const sessionSelect = document.getElementById("sessionSelect");
     sessionSelect.value = hour < 12 ? "早課" : "晚課";
@@ -185,41 +181,5 @@
     ];
     document.getElementById("blessing").textContent = blessings[Math.floor(Math.random() * blessings.length)];
   </script>
-  // 詢問通知權限
-  if ('Notification' in window && Notification.permission !== 'granted') {
-    Notification.requestPermission().then(permission => {
-      if (permission === "granted") {
-        localStorage.setItem("allowNotify", "true");
-      }
-    });
-  }
-
-  // 發送提醒
-  function sendReminder(title, body) {
-    if (Notification.permission === "granted" && localStorage.getItem("allowNotify") === "true") {
-      new Notification(title, {
-        body,
-        icon: "https://ddm-fy1.onrender.com/favicon.ico"
-      });
-    }
-  }
-
-  // 每分鐘檢查是否提醒
-  setInterval(() => {
-    const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    const today = now.toISOString().slice(0, 10);
-    const already = localStorage.getItem("lastNotify");
-
-    if ((hours === 6 || hours === 18) && minutes === 0 && already !== today + hours) {
-      const msg = hours === 6
-        ? "晨光乍現，早課時間到～誠心誦念，福慧圓滿。"
-        : "暮鼓聲聲，晚課時間到～念念不忘，願力成就。";
-      sendReminder("定課提醒", msg);
-      localStorage.setItem("lastNotify", today + hours);
-    }
-  }, 60000);
-</script>
 </body>
 </html>
