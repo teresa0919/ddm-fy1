@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>佛經統計圖表</title>
+  <title>佛經誦持統計圖表</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -19,6 +19,10 @@
         <div id="barChart"></div>
       </div>
     </div>
+
+    <!-- 佛經誦持排行榜 -->
+    <h3>佛經誦持排行榜</h3>
+    <ul id="sutraLeaderboard"></ul>
 
     <a href="index.html" class="btn">回首頁</a>
   </div>
@@ -44,6 +48,7 @@
       const data = snapshot.val();
       const sutraCount = {};
 
+      // Loop through the data to calculate the count for each sutra
       for (const date in data) {
         for (const record of Object.values(data[date])) {
           const { sutra, count } = record;
@@ -52,8 +57,10 @@
       }
 
       renderCharts(sutraCount);
+      renderSutraLeaderboard(sutraCount);
     });
 
+    // Render pie and bar charts
     function renderCharts(data) {
       const labels = Object.keys(data);
       const counts = Object.values(data);
@@ -94,6 +101,14 @@
             <span>${counts[i]}</span>
           </div>
         `;
+      }).join("");
+    }
+
+    // Render the sutra leaderboard
+    function renderSutraLeaderboard(sutraCount) {
+      const leaderboard = document.getElementById("sutraLeaderboard");
+      leaderboard.innerHTML = Object.entries(sutraCount).map(([sutra, count]) => {
+        return `<li>${sutra}: ${count} 次</li>`;
       }).join("");
     }
   </script>
