@@ -3,21 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>佛經誦持統計圖表</title>
+  <title>佛經誦持統計</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="container">
     <h2>佛經誦持統計</h2>
-    <div class="chart-section">
-      <div class="pie-chart">
-        <canvas id="pieChart"></canvas>
-      </div>
-      <div class="bar-chart">
-        <div id="barChart"></div>
-      </div>
-    </div>
 
     <!-- 每日早晚課統計 -->
     <div id="dailySummary" style="margin-top: 2rem;"></div>
@@ -47,7 +38,6 @@
 
     onValue(ref(db, "checkins"), (snapshot) => {
       const data = snapshot.val();
-      const sutraCount = {};
       const monthlySummary = {};
       const dailySummary = { morning: 0, evening: 0 };
 
@@ -56,9 +46,6 @@
         const key = `${year}-${month}`;
         for (const record of Object.values(data[date])) {
           const { sutra, count, session } = record;
-
-          // Accumulate Sutra counts
-          sutraCount[sutra] = (sutraCount[sutra] || 0) + Number(count);
 
           // Accumulate monthly statistics
           if (!monthlySummary[key]) monthlySummary[key] = {};
@@ -72,8 +59,6 @@
           }
         }
       }
-
-      renderCharts(sutraCount);
 
       // Render daily summary for morning and evening sessions
       const dailyDiv = document.getElementById("dailySummary");
@@ -96,49 +81,6 @@
         `;
       }).join("");
     });
-
-    function renderCharts(data) {
-      const labels = Object.keys(data);
-      const counts = Object.values(data);
-
-      const colors = [
-        "#e57373", "#ffeb3b", "#81c784", "#4db6ac", "#4fc3f7",
-        "#7986cb", "#ba68c8", "#f06292", "#ffb74d", "#aed581"
-      ];
-
-      const ctx = document.getElementById("pieChart").getContext("2d");
-      new Chart(ctx, {
-        type: "pie",
-        data: {
-          labels: labels,
-          datasets: [{
-            data: counts,
-            backgroundColor: colors,
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: "bottom"
-            }
-          }
-        }
-      });
-
-      const barContainer = document.getElementById("barChart");
-      barContainer.innerHTML = labels.map((label, i) => {
-        return `
-          <div class="bar-item">
-            <span>${label}</span>
-            <div class="bar">
-              <div class="fill" style="width:${(counts[i] / Math.max(...counts)) * 100}%"></div>
-            </div>
-            <span>${counts[i]}</span>
-          </div>
-        `;
-      }).join("");
-    }
   </script>
 </body>
 </html>
