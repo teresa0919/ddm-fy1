@@ -1,156 +1,102 @@
-
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>打卡成功</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>打卡成功！</title>
   <style>
-    .success-box {
-      text-align: center;
-      padding: 2rem 1rem;
-    }
-    .quote {
-      font-size: 1.25rem;
-      background-color: #f3e5f5;
-      border-radius: 1rem;
-      padding: 1.5rem;
-      margin: 1rem auto;
-      color: #4a148c;
-      max-width: 400px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .buttons {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 0.75rem 1rem;
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #fffaf3;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
       justify-content: center;
-      max-width: 400px;
-      margin: 2rem auto 0;
+      min-height: 100vh;
+      color: #4e342e;
     }
-    .buttons a {
+    .container {
+      max-width: 500px;
+      width: 90%;
+      margin: auto;
+      background: #fdf6ec;
+      padding: 2rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: #6d4c41;
+    }
+    select, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      margin-top: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 0.75rem;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 1rem;
+      border: none;
+      background-color: #fbc02d;
+      color: white;
+      cursor: pointer;
+    }
+    .links {
       margin-top: 2rem;
     }
-    .buttons {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 0.75rem 1rem;
-      justify-content: center;
-      max-width: 400px;
-      margin: 2rem auto 0;
-    }
-    .buttons a {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem 1rem;
-      justify-content: center;
-      max-width: 300px;
-      margin: 2rem auto 0;
-    }
-    .buttons a {
-      display: inline-block;
-      background: #a38bd4;
-      color: #fff;
-      padding: 0.5rem 0.6rem; width: 115px; font-size: 0.95rem; text-align: center;
-      margin: 0.5rem;
-      border-radius: 1rem;
+    .links a {
+      margin: 0 0.5rem;
       text-decoration: none;
-      font-size: 1rem;
+      color: #5d4037;
     }
   </style>
 </head>
 <body>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
-<div class="container success-box">
-  <div id="animation" style="width: 180px; margin: 1rem auto;"></div>
+  <div class="container">
     <h1>打卡成功！</h1>
-    <div class="quote" id="quoteDisplay">……</div>
-    <div class="buttons">
+    <p>請選擇一段迴向偈，或自行輸入：</p>
+
+    <select id="dedicationSelect" onchange="updateTextarea(this)">
+      <option value="">請選擇迴向偈</option>
+      <option value="願以此功德。莊嚴佛淨土。上報四重恩。下濟三途苦。若有見聞者。悉發菩提心。盡此一報身。同生極樂國。">迴向偈一</option>
+      <option value="願生西方淨土中，九品蓮花為父母。花開見佛悟無生，不退菩薩為伴侶。">迴向偈二</option>
+      <option value="十方三世佛，阿彌陀第一；九品度眾生，威德無窮極。我今大皈依，懺悔三業罪；凡有諸福善，至心用迴向。願同念佛人，感應隨時現；臨終西方境，分明在目前。見聞皆精進，同生極樂國；見佛了生死，如佛度一切。無邊煩惱斷，無量法門修；誓願度眾生，總願成佛道。虛空有盡，我願無窮。虛空有盡，我願無窮。">迴向偈三</option>
+      <option value="願我臨欲命終時，盡除一切諸障礙，面見彼佛阿彌陀，即得往生安樂剎。">迴向偈四</option>
+      <option value="願我命終時，盡除諸障礙，面見阿彌陀，往生安樂剎。">迴向偈五</option>
+      <option value="願以此功德。莊嚴佛淨土。上報四重恩。下濟三途苦。普願盡法界。沉溺諸有情。若有見聞者。悉發菩提心。盡此一報身。同生極樂國。願消三障諸煩惱，願得智慧真明瞭，普願罪障悉消除，世世常行菩薩道。">迴向偈六</option>
+      <option value="願以此功德，普及於一切。我等與眾生，皆共成佛道。">迴向偈七</option>
+      <option value="世界和平，人民安樂。正法久住，法輪常轉。災障消滅，禍患不生。法界有情，同生極樂。">迴向偈八</option>
+      <option value="我今稱念阿彌陀，真實功德佛名號，唯願慈悲哀攝受，證知懺悔及所願。我昔所造諸惡業，皆由無始貪瞋癡，從身語意之所生，一切我今皆懺悔。願我臨欲命終時，盡除一切諸障礙，面見我佛阿彌陀，即得往生安樂剎。我既往生彼國已，現前成就此大願，普願沉溺諸眾生，速往無量光佛剎。">迴向偈九</option>
+      <option value="稽首西方安樂國，接引眾生大導師。我今發願願往生，唯願慈悲哀攝受。">迴向偈十</option>
+    </select>
+
+    <textarea id="dedicationText" rows="5" placeholder="您可以在這裡自行輸入或修改迴向文..."></textarea>
+    
+    <button onclick="goHome()">完成</button>
+
+    <div class="links">
       <a href="index.html">回首頁</a>
-      <a href="chart.html">統計圖表</a>
-      <a href="leaderboard.html">排行榜</a>
-      <a href="public_wishes.html">祈願牆</a>
-      <a href="my_wishes.html">願望收藏冊</a>
-      <a href="calendar.html">打卡月曆</a>
     </div>
+  </div>
 
-    <div class="wish-box" style="margin-top: 2rem; text-align: left; max-width: 400px; margin-left: auto; margin-right: auto;">
-      <label for="wish" style="font-weight: bold;">留下你的願望：</label><br/>
-      <textarea id="wish" rows="3" placeholder="願我與家人平安健康……" style="width: 90%; max-width: 360px; margin-top: 0.5rem; border-radius: 1rem; padding: 0.75rem;"></textarea>
-      <div style="margin-top: 0.75rem;">
-        <input type="checkbox" id="isPublic" />
-        <label for="isPublic">願望可公開顯示在祈願牆（匿名）</label>
-      </div>
-      <button onclick="submitWish()" style="margin-top: 1rem; padding: 0.5rem 1rem; border-radius: 1rem; background: #4caf50; color: white; border: none; font-weight: bold;">送出願望</button>
-      <div id="wishMsg" style="margin-top: 0.5rem; font-style: italic; color: #388e3c;"></div>
-    </div>
-</div>
+  <script>
+    function updateTextarea(select) {
+      document.getElementById('dedicationText').value = select.value;
+    }
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
-const firebaseConfig = {
-  apiKey: "AIzaSyBU1AYuZzvZC1eW4nllG5qCAvcKXT90sg0",
-  authDomain: "ddm-fy.firebaseapp.com",
-  databaseURL: "https://ddm-fy-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "ddm-fy",
-  storageBucket: "ddm-fy.appspot.com",
-  messagingSenderId: "439647437849",
-  appId: "1:439647437849:web:b195f3e4d316d417969688"
-};
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-</script>
-<script>
-const quotes = [
-  "一日不作，一日不食。",
-  "佛法在世間，不離世間覺。",
-  "念佛一聲，罪滅河沙。",
-  "隨喜功德，福慧雙增。",
-  "靜坐常思己過，閒談莫論人非。",
-  "莫忘初心，方得始終。",
-  "心淨則佛土淨，心安即是道場。",
-  "修行不離日常，持戒就在生活。",
-  "願以此功德，普及於一切。",
-  "正念當下，即是光明。"
-];
-document.getElementById("quoteDisplay").textContent = quotes[Math.floor(Math.random() * quotes.length)];
-
-function submitWish() {
-  const wish = document.getElementById("wish").value.trim();
-  const isPublic = document.getElementById("isPublic").checked;
-  const msg = document.getElementById("wishMsg");
-
-  if (!wish) {
-    msg.textContent = "請先輸入願望內容唷～";
-    msg.style.color = "#d32f2f";
-    return;
-  }
-
-  const nickname = localStorage.getItem("nickname") || "匿名";
-  const timestamp = Date.now();
-  const newWish = {
-    nickname,
-    wish,
-    isPublic,
-    timestamp
-  };
-  import("https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js").then(({ getDatabase, ref, push }) => {
-    const db = getDatabase();
-    push(ref(db, "wishes"), newWish)
-      .then(() => {
-        msg.textContent = "已送出！願望將與功德一同迴向～";
-        msg.style.color = "#388e3c";
-        document.getElementById("wish").value = "";
-        document.getElementById("isPublic").checked = false;
-      })
-      .catch((err) => {
-        msg.textContent = "送出失敗：" + err.message;
-        msg.style.color = "#d32f2f";
-      });
-  });
-}
-</script>
+    function goHome() {
+      alert("感謝您誠心迴向！");
+      window.location.href = "index.html";
+    }
+  </script>
 </body>
 </html>
