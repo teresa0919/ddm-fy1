@@ -17,8 +17,8 @@
       color: #4e342e;
     }
     .container {
-      max-width: 460px;
-      width: 90%;
+      max-width: 480px;
+      width: 92%;
       margin: auto;
       background: #f9f5f0;
       padding: 2rem;
@@ -27,9 +27,10 @@
       text-align: center;
     }
     h1 {
-      font-size: 1.75rem;
-      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+      margin-bottom: 1.2rem;
       font-weight: 700;
+      color: #5d4037;
     }
     input, select, button {
       width: 100%;
@@ -46,6 +47,10 @@
       border: none;
       font-weight: bold;
       cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    button:hover {
+      background-color: #f9a825;
     }
     .links {
       margin-top: 1.5rem;
@@ -64,9 +69,9 @@
 <body>
   <div class="container">
     <h1>豐原分會定課打卡站</h1>
-    <div id="blessing" style="margin: 1rem auto 1.5rem; font-size: 1.1rem; color: #6d4c41; font-style: italic;"></div>
+    <div id="blessing" style="margin-bottom: 1rem; font-size: 1.1rem; color: #6d4c41; font-style: italic;"></div>
 
-    <input type="text" id="nickname" placeholder="輸入你的暱稱" />
+    <input type="text" id="nickname" placeholder="輸入你的暱稱" autofocus />
 
     <select id="sessionSelect">
       <option value="">請選擇誦持時段</option>
@@ -129,10 +134,12 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // 自動判斷早課或晚課
-    const hour = new Date().getHours();
+    // 自動判斷時段（若未選擇）
     const sessionSelect = document.getElementById("sessionSelect");
-    sessionSelect.value = hour < 12 ? "早課" : "晚課";
+    if (!sessionSelect.value) {
+      const hour = new Date().getHours();
+      sessionSelect.value = hour < 12 ? "早課" : "晚課";
+    }
 
     document.getElementById("submitBtn").addEventListener("click", async () => {
       const nickname = document.getElementById("nickname").value.trim();
@@ -148,6 +155,10 @@
       }
 
       try {
+        const btn = document.getElementById("submitBtn");
+        btn.textContent = "打卡中...";
+        btn.disabled = true;
+
         localStorage.setItem("nickname", nickname);
         const date = new Date().toISOString().slice(0, 10);
         const checkinRef = ref(db, "checkins/" + date);
@@ -162,6 +173,8 @@
         window.location.href = "success.html";
       } catch (err) {
         alert("打卡失敗：" + err.message);
+        btn.textContent = "立即打卡";
+        btn.disabled = false;
       }
     });
   </script>
