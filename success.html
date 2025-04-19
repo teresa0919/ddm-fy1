@@ -28,8 +28,14 @@
     }
     h1 {
       font-size: 1.8rem;
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
       color: #6d4c41;
+    }
+    #sessionLabel {
+      font-size: 1.1rem;
+      color: #6d4c41;
+      margin-bottom: 1rem;
+      font-weight: bold;
     }
     select, textarea {
       width: 100%;
@@ -63,6 +69,8 @@
 <body>
   <div class="container">
     <h1>打卡成功！</h1>
+    <div id="sessionLabel"></div>
+
     <p>請選擇一段迴向偈，或自行輸入：</p>
 
     <select id="dedicationSelect" onchange="updateTextarea(this)">
@@ -89,6 +97,11 @@
   </div>
 
   <script>
+    // 顯示早課 / 晚課
+    const hour = new Date().getHours();
+    const session = hour < 12 ? "早課" : "晚課";
+    document.getElementById("sessionLabel").textContent = `本次為「${session}」打卡`;
+
     function updateTextarea(select) {
       document.getElementById('dedicationText').value = select.value;
     }
