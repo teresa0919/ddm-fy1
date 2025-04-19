@@ -185,5 +185,41 @@
     ];
     document.getElementById("blessing").textContent = blessings[Math.floor(Math.random() * blessings.length)];
   </script>
+  // 詢問通知權限
+  if ('Notification' in window && Notification.permission !== 'granted') {
+    Notification.requestPermission().then(permission => {
+      if (permission === "granted") {
+        localStorage.setItem("allowNotify", "true");
+      }
+    });
+  }
+
+  // 發送提醒
+  function sendReminder(title, body) {
+    if (Notification.permission === "granted" && localStorage.getItem("allowNotify") === "true") {
+      new Notification(title, {
+        body,
+        icon: "https://ddm-fy1.onrender.com/favicon.ico"
+      });
+    }
+  }
+
+  // 每分鐘檢查是否提醒
+  setInterval(() => {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const today = now.toISOString().slice(0, 10);
+    const already = localStorage.getItem("lastNotify");
+
+    if ((hours === 6 || hours === 18) && minutes === 0 && already !== today + hours) {
+      const msg = hours === 6
+        ? "晨光乍現，早課時間到～誠心誦念，福慧圓滿。"
+        : "暮鼓聲聲，晚課時間到～念念不忘，願力成就。";
+      sendReminder("定課提醒", msg);
+      localStorage.setItem("lastNotify", today + hours);
+    }
+  }, 60000);
+</script>
 </body>
 </html>
